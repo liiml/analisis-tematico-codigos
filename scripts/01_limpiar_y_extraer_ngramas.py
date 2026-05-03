@@ -1,313 +1,163 @@
+import unicodedata
+import re
+import spacy
+from typing import List, Set, Tuple
 import pandas as pd
-import os
-import sys
-from collections import defaultdict
-from pathlib import Path
 
-# Agregar el directorio actual al path para importar utils
-sys.path.insert(0, os.path.dirname(__file__))
+# Cargar modelo de spaCy para español
+try:
+    nlp = spacy.load("es_core_news_sm")
+except OSError:
+    print("Descargando modelo de spaCy...")
+    import subprocess
+    subprocess.run(["python", "-m", "spacy", "download", "es_core_news_sm"])
+    nlp = spacy.load("es_core_news_sm")
 
-from utils import (
-    procesar_texto_completo, extraer_ngramas, procesar_columna_casos,
-    crear_contexto, limpiar_texto, lematizar_texto, quitar_stop_words
-)
+# Stop-words en español (determinantes, preposiciones, conjunciones, verbos auxiliares)
+# Con variación de género: o, a, x
+STOP_WORDS = {
+    # Determinantes
+    "el", "la", "los", "las", "un", "una", "unos", "unas",
+    "este", "esta", "estos", "estas", "estx", "estxs",
+    "ese", "esa", "esos", "esas", "esx", "esxs",
+    "aquel", "aquella", "aquellos", "aquellas", "aquelx", "aquelxs",
+    
+    # Preposiciones
+    "de", "a", "en", "por", "para", "con", "sin", "entre", "durante",
+    "ante", "bajo", "cabe", "desde", "hacia", "hasta", "mediante", "sobre", "tras",
+    
+    # Conjunciones
+    "y", "o", "pero", "mas", "sino", "que", "quien", "como", "si", "aunque",
+    "porque", "pues", "luego", "conque", "ni",
+    
+    # Verbos auxiliares
+    "es", "esta", "son", "estan", "estoy", "estamos", "estais",
+    "ser", "estar", "haber", "he", "has", "ha", "hemos", "habeis", "han",
+    "soy", "eres", "somos", "sois",
+    
+    # Pronombres comunes
+    "yo", "tu", "el", "ella", "nosotros", "nosotras", "vosotros", "vosotras",
+    "ellos", "ellas", "me", "te", "se", "nos", "os", "mi", "mio", "tuyo",
+    "suyo", "nuestro", "vuestro",
+    
+    # Otros comunes
+    "muy", "mas", "menos", "poco", "mucho", "todo", "otro", "mismo",
+    "tal", "cual", "cuando", "donde", "cuanto",
+}
 
-# Configuración de rutas
-ARCHIVO_ENTRADA = "datos/brutos/Análisis temático.xlsx"
-HOJA_ENTRADA = "Etiquetas"
-ARCHIVO_SALIDA = "datos/procesados/01_ngrams_procesados.xlsx"
+def quitar_tildes(texto: str) -> str:
+    """Elimina tildes y diacríticos del texto."""
+    nfkd = unicodedata.normalize('NFKD', texto)
+    return ''.join([c for c in nfkd if not unicodedata.combining(c)])
 
-# Nombres de columnas (según especificación)
-COL_ID = "ID"
-COL_CASO = "Caso"
-COL_FUENTE = "Fuente"
-COL_NIVEL1 = "Etiqueta [Nivel 1]"
-COL_NIVEL2 = "Etiqueta [Nivel 2]"
-COL_NIVEL3 = "Etiqueta [Nivel 3]"
-COL_CARACT = "Caracterización"
-COL_CITA = "Cita"
+def limpiar_texto(texto: str) -> str:
+    """
+    Limpia el texto:
+    1. Convierte a minúsculas
+    2. Quita tildes
+    3. Sustituye caracteres especiales por espacios
+    4. Normaliza espacios múltiples a un solo espacio
+    5. Elimina espacios al inicio y final
+    """
+    if not isinstance(texto, str) or pd.isna(texto):
+        return ""
+    
+    # PASO 1: Convertir a minúsculas
+    texto = texto.lower()
+    
+    # PASO 2: Quitar tildes y diacríticos
+    texto = quitar_tildes(texto)
+    
+    # PASO 3: Sustituir todos los caracteres especiales (no alfanuméricos) por espacios
+    # Mantiene: letras (a-z), números (0-9) y espacios
+    # Sustituye por espacio: ; , . ! ? ( ) [ ] { } - _ / \ | @ # $ % ^ & * + = ~ ` : " ' < > etc.
+    texto = re.sub(r'[^a-z0-9\s]', ' ', texto)
+    
+    # PASO 4: Sustituir múltiples espacios por un único espacio
+    texto = re.sub(r' +', ' ', texto)
+    
+    # PASO 5: Eliminar espacios al inicio y final
+    texto = texto.strip()
+    
+    return texto
 
-COLUMNAS_CONTENIDO = [COL_NIVEL1, COL_NIVEL2, COL_NIVEL3, COL_CARACT]
+def lematizar_texto(texto: str) -> str:
+    """
+    Lematiza el texto usando spaCy.
+    Convierte plurales a singulares, verbos conjugados a infinitivos, etc.
+    """
+    if not texto:
+        return ""
+    
+    doc = nlp(texto)
+    lemmas = [token.lemma_ for token in doc]
+    return ' '.join(lemmas)
 
-def validar_columnas(df):
-    """Valida que el DataFrame tenga todas las columnas requeridas."""
-    columnas_requeridas = [COL_ID, COL_CASO, COL_FUENTE] + COLUMNAS_CONTENIDO + [COL_CITA]
-    columnas_faltantes = [col for col in columnas_requeridas if col not in df.columns]
-    
-    if columnas_faltantes:
-        print(f"⚠️  ADVERTENCIA: Columnas faltantes en el Excel:")
-        for col in columnas_faltantes:
-            print(f"   - '{col}'")
-        print(f"\n   Columnas disponibles: {list(df.columns)}")
-        
-        # Intentar mapeo automático de columnas similares
-        return False
-    return True
+def quitar_stop_words(texto: str) -> str:
+    """Elimina stop-words del texto."""
+    palabras = texto.split()
+    palabras_filtradas = [p for p in palabras if p not in STOP_WORDS]
+    return ' '.join(palabras_filtradas)
 
-def limpiar_valor_fuente(valor):
-    """Limpia y valida valores de la columna Fuente."""
-    if pd.isna(valor):
-        return None
-    
-    valor_str = str(valor).strip()
-    if not valor_str or valor_str.lower() in ['nan', '', 'null', 'none']:
-        return None
-    
-    return valor_str
+def procesar_texto_completo(texto: str) -> str:
+    """
+    Pipeline completo de procesamiento:
+    1. Limpieza
+    2. Lematización
+    3. Quitar stop-words
+    """
+    texto = limpiar_texto(texto)
+    texto = lematizar_texto(texto)
+    texto = quitar_stop_words(texto)
+    return texto
 
-def limpiar_valor_caso(valor):
-    """Limpia y valida valores de la columna Caso."""
-    if pd.isna(valor):
-        return None
+def extraer_ngramas(texto: str, min_n: int = 1, max_n: int = 5) -> List[str]:
+    """
+    Extrae n-gramas de un texto.
+    min_n: mínimo número de palabras en el n-grama (default: 1)
+    max_n: máximo número de palabras en el n-grama (default: 5)
     
-    valor_str = str(valor).strip()
-    if not valor_str or valor_str.lower() in ['nan', '', 'null', 'none']:
-        return None
+    Retorna lista de n-gramas únicos encontrados en el texto.
+    """
+    palabras = texto.split()
     
-    return valor_str
+    if not palabras:
+        return []
+    
+    ngramas = set()
+    
+    for n in range(min_n, min(max_n + 1, len(palabras) + 1)):
+        for i in range(len(palabras) - n + 1):
+            ngrama = ' '.join(palabras[i:i+n])
+            # Solo agregar si no es solo stop-words
+            if ngrama.strip():
+                ngramas.add(ngrama)
+    
+    return list(ngramas)
 
-def main():
-    print("=" * 80)
-    print("SCRIPT 1: Limpieza de texto y extracción de n-gramas")
-    print("=" * 80)
+def procesar_columna_casos(casos_str: str) -> List[str]:
+    """
+    Convierte una columna de Caso con posibles múltiples valores.
+    Entrada: "10,11" o "5" o "1, 2, 3"
+    Salida: ["10", "11"] o ["5"] o ["1", "2", "3"]
+    """
+    if pd.isna(casos_str):
+        return []
     
-    # Verificar que el archivo existe
-    if not os.path.exists(ARCHIVO_ENTRADA):
-        print(f"❌ Error: No se encontró {ARCHIVO_ENTRADA}")
-        print(f"   Asegúrate de que el archivo está en la ruta correcta")
-        return
-    
-    # Leer Excel
-    print(f"\n📖 Leyendo {ARCHIVO_ENTRADA}...")
-    try:
-        df = pd.read_excel(ARCHIVO_ENTRADA, sheet_name=HOJA_ENTRADA)
-    except Exception as e:
-        print(f"❌ Error al leer Excel: {e}")
-        return
-    
-    print(f"   ✓ {len(df)} filas leídas")
-    
-    # Validar columnas
-    if not validar_columnas(df):
-        print("⚠️  ADVERTENCIA: Algunas columnas esperadas no se encontraron")
-        print("   El script intentará continuar, pero puede haber errores")
-    
-    # Estructuras de datos para resultados
-    ngramas_frecuencia = defaultdict(int)  # ngrama -> frecuencia total
-    ngramas_casos = defaultdict(set)  # ngrama -> set de casos
-    ngramas_fuentes = defaultdict(set)  # ngrama -> set de fuentes
-    ngramas_detalles = []  # lista de detalles para Hoja 4
-    
-    # Procesar cada fila
-    print(f"\n🔄 Procesando {len(df)} filas...")
-    filas_con_error = 0
-    
-    for idx, row in df.iterrows():
-        try:
-            # Obtener y limpiar valores
-            caso_str = limpiar_valor_caso(row.get(COL_CASO))
-            fuente = limpiar_valor_fuente(row.get(COL_FUENTE))
-            
-            # Validar que tenemos al menos caso
-            if not caso_str:
-                continue
-            
-            # Si no hay fuente, usar valor por defecto
-            if not fuente:
-                fuente = "Sin especificar"
-            
-            id_etiqueta = row.get(COL_ID, f"Fila_{idx}")
-            
-            # Procesar casos múltiples (ej: "10,11")
-            casos = procesar_columna_casos(caso_str)
-            
-            if not casos:
-                continue
-            
-            # Procesar todas las columnas de contenido
-            for col in COLUMNAS_CONTENIDO:
-                if col not in row.index:
-                    continue
-                    
-                texto_original = row[col]
-                
-                if pd.isna(texto_original) or not str(texto_original).strip():
-                    continue
-                
-                # Pipeline de procesamiento
-                try:
-                    texto_limpio = limpiar_texto(str(texto_original))
-                    if not texto_limpio:
-                        continue
-                    
-                    texto_lematizado = lematizar_texto(texto_limpio)
-                    texto_procesado = quitar_stop_words(texto_lematizado)
-                    
-                    if not texto_procesado:
-                        continue
-                    
-                    # Extraer n-gramas (máximo 5 palabras por rendimiento)
-                    ngramas = extraer_ngramas(texto_procesado, min_n=1, max_n=5)
-                    
-                    # Para cada n-grama encontrado
-                    for ngrama in ngramas:
-                        # Actualizar frecuencia y casos/fuentes
-                        ngramas_frecuencia[ngrama] += 1
-                        for caso in casos:
-                            ngramas_casos[ngrama].add(caso)
-                        # Asegurar que fuente es string antes de agregarlo
-                        if isinstance(fuente, str):
-                            ngramas_fuentes[ngrama].add(fuente)
-                        
-                        # Guardar detalle
-                        contexto = crear_contexto(row, COLUMNAS_CONTENIDO) if COLUMNAS_CONTENIDO[0] in row.index else ""
-                        cita_textual = row.get(COL_CITA, "") if COL_CITA in row.index else ""
-                        
-                        ngramas_detalles.append({
-                            'ID': id_etiqueta,
-                            'N-grama': ngrama,
-                            'Caso': caso_str,
-                            'Fuente': fuente,
-                            'Nivel': col,
-                            'Contexto completo': contexto,
-                            'Cita textual': cita_textual if pd.notna(cita_textual) else ""
-                        })
-                
-                except Exception as e_col:
-                    print(f"   ⚠️  Error procesando columna '{col}' en fila {idx}: {str(e_col)[:50]}")
-                    continue
-        
-        except Exception as e:
-            filas_con_error += 1
-            if filas_con_error <= 5:  # Mostrar solo los primeros 5 errores
-                print(f"   ⚠️  Error procesando fila {idx}: {str(e)[:80]}")
-            continue
-    
-    if filas_con_error > 5:
-        print(f"   ⚠️  ... y {filas_con_error - 5} filas con error más")
-    
-    print(f"   ✓ {len(ngramas_frecuencia)} n-gramas únicos encontrados")
-    
-    # Filtrar n-gramas que aparecen al menos 2 veces
-    print(f"\n🔍 Filtrando n-gramas (frecuencia >= 2)...")
-    ngramas_filtrados = {
-        ngrama: freq for ngrama, freq in ngramas_frecuencia.items()
-        if freq >= 2
-    }
-    
-    print(f"   ✓ {len(ngramas_filtrados)} n-gramas con frecuencia >= 2")
-    
-    if len(ngramas_filtrados) == 0:
-        print("❌ No se encontraron n-gramas que aparezcan 2+ veces")
-        print("   Verifica que tu Excel tiene contenido en las columnas de etiquetas")
-        return
-    
-    # Obtener lista de todos los casos únicos
-    casos_unicos = sorted(set(
-        caso for casos_set in ngramas_casos.values()
-        for caso in casos_set
-    ))
-    
-    # Crear hojas de salida
-    print(f"\n📝 Generando hojas de Excel...")
-    
-    # HOJA 1: Frecuencias Globales
-    hoja1_data = []
-    for ngrama in sorted(ngramas_filtrados.keys()):
-        freq = ngramas_filtrados[ngrama]
-        casos_list = sorted([str(c).strip() for c in ngramas_casos[ngrama]])
-        fuentes_list = sorted([str(f).strip() for f in ngramas_fuentes[ngrama]])
-        num_casos = len(casos_list)
-        num_fuentes = len(fuentes_list)
-        pct_casos = (num_casos / len(casos_unicos)) * 100 if casos_unicos else 0
-        
-        hoja1_data.append({
-            'N-grama': ngrama,
-            'Frecuencia Total': freq,
-            'Casos donde aparece': ', '.join(casos_list),
-            'Num Casos': num_casos,
-            'Fuentes donde aparece': ', '.join(fuentes_list),
-            'Num Fuentes': num_fuentes,
-            '% Casos cubiertos': f"{pct_casos:.1f}%"
-        })
-    
-    df_hoja1 = pd.DataFrame(hoja1_data)
-    
-    # HOJA 2: Matriz Casos × Porcentajes
-    hoja2_data = []
-    for ngrama in sorted(ngramas_filtrados.keys()):
-        fila = {'N-grama': ngrama}
-        
-        # Contar apariciones por caso
-        for caso in casos_unicos:
-            count = sum(1 for det in ngramas_detalles 
-                       if det['N-grama'] == ngrama and caso in procesar_columna_casos(det['Caso']))
-            fila[f'Caso {caso}'] = count
-        
-        fila['TOTAL'] = ngramas_filtrados[ngrama]
-        
-        # Agregar porcentajes
-        total = fila['TOTAL']
-        for caso in casos_unicos:
-            valor = fila[f'Caso {caso}']
-            pct = (valor / total * 100) if total > 0 else 0
-            fila[f'% Caso {caso}'] = f"{pct:.1f}%"
-        
-        hoja2_data.append(fila)
-    
-    df_hoja2 = pd.DataFrame(hoja2_data)
-    
-    # HOJA 3: Matriz Fuentes × N-gramas
-    fuentes_unicas = sorted(set(fuente for fuentes_set in ngramas_fuentes.values() for fuente in fuentes_set))
-    
-    hoja3_data = []
-    for ngrama in sorted(ngramas_filtrados.keys()):
-        fila = {'N-grama': ngrama}
-        
-        for fuente in fuentes_unicas:
-            count = sum(1 for det in ngramas_detalles 
-                       if det['N-grama'] == ngrama and det['Fuente'] == fuente)
-            fila[fuente] = count
-        
-        fila['TOTAL'] = ngramas_filtrados[ngrama]
-        hoja3_data.append(fila)
-    
-    df_hoja3 = pd.DataFrame(hoja3_data)
-    
-    # HOJA 4: Registro Detallado (solo con n-gramas filtrados)
-    ngramas_detalles_filtrados = [
-        det for det in ngramas_detalles
-        if det['N-grama'] in ngramas_filtrados
-    ]
-    
-    df_hoja4 = pd.DataFrame(ngramas_detalles_filtrados)
-    if len(df_hoja4) > 0:
-        df_hoja4 = df_hoja4[['ID', 'N-grama', 'Caso', 'Fuente', 'Nivel', 'Contexto completo', 'Cita textual']]
-    
-    # Escribir Excel con múltiples hojas
-    print(f"   ✓ Escribiendo {ARCHIVO_SALIDA}...")
-    
-    os.makedirs(os.path.dirname(ARCHIVO_SALIDA) if os.path.dirname(ARCHIVO_SALIDA) else ".", exist_ok=True)
-    
-    try:
-        with pd.ExcelWriter(ARCHIVO_SALIDA, engine='openpyxl') as writer:
-            df_hoja1.to_excel(writer, sheet_name='Frecuencias Globales', index=False)
-            df_hoja2.to_excel(writer, sheet_name='Matriz Casos x Porcentajes', index=False)
-            df_hoja3.to_excel(writer, sheet_name='Matriz Fuentes x N-gramas', index=False)
-            if len(df_hoja4) > 0:
-                df_hoja4.to_excel(writer, sheet_name='Registro Detallado', index=False)
-    except Exception as e:
-        print(f"❌ Error escribiendo Excel: {e}")
-        return
-    
-    print(f"\n✅ Proceso completado exitosamente")
-    print(f"   📁 Salida: {ARCHIVO_SALIDA}")
-    print(f"   📊 Hojas generadas:")
-    print(f"      - Frecuencias Globales ({len(df_hoja1)} filas)")
-    print(f"      - Matriz Casos x Porcentajes ({len(df_hoja2)} filas)")
-    print(f"      - Matriz Fuentes x N-gramas ({len(df_hoja3)} filas)")
-    print(f"      - Registro Detallado ({len(df_hoja4)} filas)")
-    print("=" * 80)
+    casos_str = str(casos_str).strip()
+    casos = [c.strip() for c in casos_str.split(',')]
+    return [c for c in casos if c]
 
-if __name__ == "__main__":
-    main()
+def crear_contexto(fila: dict, columnas: List[str]) -> str:
+    """
+    Crea una cadena de contexto a partir de múltiples columnas.
+    Entrada: fila (dict), columnas (lista de nombres de columnas)
+    Salida: string con formato "Col1: valor1 | Col2: valor2 | ..."
+    """
+    contexto_partes = []
+    for col in columnas:
+        valor = fila.get(col, "")
+        if pd.notna(valor) and str(valor).strip():
+            contexto_partes.append(f"{col}: {valor}")
+    
+    return " | ".join(contexto_partes)
