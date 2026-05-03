@@ -138,15 +138,43 @@ def extraer_ngramas(texto: str, min_n: int = 1, max_n: int = 5) -> List[str]:
 def procesar_columna_casos(casos_str: str) -> List[str]:
     """
     Convierte una columna de Caso con posibles múltiples valores.
-    Entrada: "10,11" o "5" o "1, 2, 3"
-    Salida: ["10", "11"] o ["5"] o ["1", "2", "3"]
+    Maneja formatos:
+    - "10" → ["10"]
+    - "10,11" → ["10", "11"]
+    - "1, 2, 3" → ["1", "2", "3"]
+    - "10 ,11 , 12" → ["10", "11", "12"]
+    
+    Separa por comas, quita espacios y devuelve lista ordenada de casos únicos.
     """
     if pd.isna(casos_str):
         return []
     
     casos_str = str(casos_str).strip()
-    casos = [c.strip() for c in casos_str.split(',')]
-    return [c for c in casos if c]
+    
+    if not casos_str:
+        return []
+    
+    # Separar por coma y limpiar cada caso
+    casos_raw = casos_str.split(',')
+    casos = []
+    
+    for caso in casos_raw:
+        # Quitar espacios al inicio y final
+        caso_limpio = caso.strip()
+        
+        # Solo agregar si no está vacío
+        if caso_limpio:
+            casos.append(caso_limpio)
+    
+    # Ordenar numéricamente si son números, sino alfabéticamente
+    try:
+        # Intentar convertir a int para ordenar numéricamente
+        casos_ordenados = sorted(list(set(casos)), key=lambda x: int(x))
+    except ValueError:
+        # Si no son números puros, ordenar alfabéticamente
+        casos_ordenados = sorted(list(set(casos)))
+    
+    return casos_ordenados
 
 def crear_contexto(fila: dict, columnas: List[str]) -> str:
     """
