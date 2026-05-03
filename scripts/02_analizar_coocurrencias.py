@@ -254,6 +254,23 @@ def visualizar_red(G, titulo, archivo_salida, num_casos_total):
         print(f"   ❌ Error generando gráfico: {e}")
         plt.close()
 
+def obtener_numero_casos_total(df_freq_global):
+    """
+    Extrae dinámicamente el número total de casos del DataFrame.
+    """
+    try:
+        todos_los_casos = set()
+        for casos_str in df_freq_global['Casos donde aparece']:
+            if pd.notna(casos_str):
+                todos_los_casos.update([c.strip() for c in str(casos_str).split(',')])
+        
+        if todos_los_casos:
+            return len(todos_los_casos)
+    except Exception as e:
+        print(f"   ⚠️  Error extrayendo número de casos: {e}")
+    
+    return 16  # Valor por defecto
+
 def main():
     print("=" * 80)
     print("SCRIPT 2: Análisis de co-ocurrencias y visualización")
@@ -288,17 +305,7 @@ def main():
     print(f"   ✓ {len(df_detallado)} registros detallados leídos")
     
     # Calcular número de casos únicos (dinámicamente)
-    num_casos_total = len(df_freq_global['Num Casos'].max()) if 'Num Casos' in df_freq_global.columns else 16
-    try:
-        # Extraer casos únicos de las frecuencias globales
-        todos_los_casos = set()
-        for casos_str in df_freq_global['Casos donde aparece']:
-            if pd.notna(casos_str):
-                todos_los_casos.update([c.strip() for c in str(casos_str).split(',')])
-        num_casos_total = len(todos_los_casos)
-    except:
-        num_casos_total = 16  # Valor por defecto si hay error
-    
+    num_casos_total = obtener_numero_casos_total(df_freq_global)
     print(f"   ✓ Número total de casos: {num_casos_total}")
     
     # Calcular co-ocurrencias
