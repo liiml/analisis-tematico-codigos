@@ -1,7 +1,14 @@
+# Procesamiento de datos y Excel
 pandas>=2.2.0
 openpyxl>=3.1.0
+
+# Procesamiento de lenguaje natural (NLP)
+spacy>=3.6.0
+
+# Análisis de redes y gráficos
 networkx>=3.1
 matplotlib>=3.8.0
-numpy>=1.26.0
-spacy>=3.6.0
 seaborn>=0.13.0
+
+# Utilidades
+numpy>=1.26.0
