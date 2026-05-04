@@ -18,31 +18,31 @@ GRAFICO_DEBIL = "resultados/red_temas_debil_filtrado.png"
 
 def extraer_ngramas_seleccionados(archivo):
     """
-    Lee las hojas 'seleccionados_1' y 'seleccionados_2' y extrae todos los n-gramas únicos.
+    Lee las hojas 'Frecuencias_seleccion_1' y 'Frecuencias_seleccion_2' y extrae todos los n-gramas únicos.
     Retorna set con todos los n-gramas seleccionados.
     """
     ngramas_seleccionados = set()
     
     try:
-        # Leer seleccionados_1
+        # Leer Frecuencias_seleccion_1
         try:
-            df_sel1 = pd.read_excel(archivo, sheet_name='seleccionados_1')
+            df_sel1 = pd.read_excel(archivo, sheet_name='Frecuencias_seleccion_1')
             for col in ['N-Grama [1]', 'N-Grama [2]', 'N-Grama [3]']:
                 if col in df_sel1.columns:
                     ngramas_seleccionados.update(df_sel1[col].dropna().unique())
-            print(f"   ✓ Seleccionados_1: {len(df_sel1)} filas leídas")
+            print(f"   ✓ Frecuencias_seleccion_1: {len(df_sel1)} filas leídas")
         except Exception as e:
-            print(f"   ⚠️  No se encontró 'seleccionados_1': {e}")
+            print(f"   ⚠️  No se encontró 'Frecuencias_seleccion_1': {e}")
         
-        # Leer seleccionados_2
+        # Leer Frecuencias_seleccion_2
         try:
-            df_sel2 = pd.read_excel(archivo, sheet_name='seleccionados_2')
+            df_sel2 = pd.read_excel(archivo, sheet_name='Frecuencias_seleccion_2')
             for col in ['N-Grama [1]', 'N-Grama [2]', 'N-Grama [3]']:
                 if col in df_sel2.columns:
                     ngramas_seleccionados.update(df_sel2[col].dropna().unique())
-            print(f"   ✓ Seleccionados_2: {len(df_sel2)} filas leídas")
+            print(f"   ✓ Frecuencias_seleccion_2: {len(df_sel2)} filas leídas")
         except Exception as e:
-            print(f"   ⚠️  No se encontró 'seleccionados_2': {e}")
+            print(f"   ⚠️  No se encontró 'Frecuencias_seleccion_2': {e}")
     
     except Exception as e:
         print(f"   ❌ Error leyendo hojas de seleccionados: {e}")
