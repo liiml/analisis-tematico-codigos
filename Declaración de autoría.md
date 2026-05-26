@@ -10,7 +10,7 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 
 **Conceptualización, Diseño Metodológico y Dirección del Proyecto:**
 - Autora del TFG (usuaria del repositorio)
-- Todas las decisiones metodológicas, estructuras de análisis, lógica de negocio y criterios de filtrado fueron conceptualizadas originalmente por la autora
+- Todas las decisiones metodológicas, estructuras de análisis, lógica de análisis y criterios de filtrado fueron conceptualizadas originalmente por la autora
 - El diseño de las métricas, definición de co-ocurrencias fuertes/débiles y visualizaciones emerge de las necesidades específicas de la investigación
 
 **Implementación Técnica y Desarrollo de Código:**
