@@ -4,37 +4,36 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 
 ---
 
-## ⚖️ Declaración de Autoría y Atribución (APA 7)
+## ⚖️ Declaración de Autoría y Atribución
 
 ### ✍️ Contribuciones Intelectuales
 
 **Conceptualización, Diseño Metodológico y Dirección del Proyecto:**
-- Autor del TFG (usuario del repositorio)
-- Todas las decisiones metodológicas, estructuras de análisis, lógica de negocio y criterios de filtrado fueron conceptualizadas originalmente por el autor
+- Autora del TFG (usuaria del repositorio)
+- Todas las decisiones metodológicas, estructuras de análisis, lógica de negocio y criterios de filtrado fueron conceptualizadas originalmente por la autora
 - El diseño de las métricas, definición de co-ocurrencias fuertes/débiles y visualizaciones emerge de las necesidades específicas de la investigación
 
 **Implementación Técnica y Desarrollo de Código:**
-- **GitHub Copilot** (versión más reciente): Asistencia en redacción de scripts Python, optimización de algoritmos y mejoras iterativas
-- **Windsurf** (versión más reciente de Codeium): Consultoría técnica, sugerencias de refactorización y asistencia en iteraciones posteriores
+- **GitHub Copilot** (versión 0.45.1): Asistencia en redacción de scripts Python, optimización de algoritmos y mejoras iterativas
+- **Windsurf** (versión 1.48.2): Consultoría técnica, sugerencias de refactorización y asistencia en iteraciones posteriores
 
 **Supervisión y Validación:**
 - Todo el código fue revisado, testeado y validado por el autor antes de uso
 
 ### 🚨 Aspectos Cubiertos para Evitar Plagio
 
-✅ **Conceptualización original**: Todas las métricas, algoritmos y enfoques analíticos son conceptualización del autor
+✅ **Conceptualización original**: Todas las métricas son conceptualización de la autora
 - Definición de co-ocurrencias fuertes (2+ casos, 2+ fuentes) vs débiles (2+ casos, misma fuente)
-- Estructura de filtrados jerárquicos automáticos
 - Normalización de grosores de aristas proporcional a % Casos Juntos vs Separados
 - Uso de layouts circulares/spring ordenados por conectividad
 
-✅ **Decisiones de diseño**: Todas son del autor, iteradas con asistencia de IA
+✅ **Decisiones de diseño**: Todas son de la autora, implementadas con asistencia de IA
 
-✅ **Iteraciones metodológicas**: El refinamiento de algoritmos (ej: cambio de criterios de coocurrencia) surgió de decisiones propias del autor
+✅ **Iteraciones metodológicas**: El refinamiento de algoritmos (ej: cambio de criterios de coocurrencia) surgió de decisiones propias de la autora
 
-✅ **Código asistido**: Los scripts fueron **redactados por IA siguiendo especificaciones explícitas del autor**, pero la lógica es del autor
+✅ **Código asistido**: Los scripts fueron **redactados por IA siguiendo especificaciones explícitas de la autora**, pero la lógica es de la autora
 
-✅ **Supervisión técnica**: Todas las funciones fueron revisadas por el autor antes de implementación
+✅ **Supervisión técnica**: Todas las funciones fueron revisadas por la autora antes de implementación
 
 ---
 
@@ -44,7 +43,7 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 
 | Software | Versión | Propósito |
 |----------|---------|----------|
-| **Python** | 3.8+ | Lenguaje de programación base |
+| **Python** | 3.13.3 | Lenguaje de programación base |
 | **pip** | 26.1 | Gestor de paquetes Python |
 | **setuptools** | 81.0.0 | Construcción y distribución de paquetes |
 | **wheel** | 0.47.0 | Formato de paquete Python |
@@ -67,7 +66,6 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 | **spacy-legacy** | 3.0.12 | Compatibilidad con versiones anteriores de spaCy | Honnibal, M., & Montani, I. (n.d.). spacy-legacy. GitHub. |
 | **spacy-loggers** | 1.0.5 | Sistema de logging para spaCy | Honnibal, M., & Montani, I. (n.d.). spacy-loggers. GitHub. |
 | **es_core_news_sm** | 3.8.0 | Modelo de lenguaje español para spaCy | Honnibal, M., & Montani, I. (2018). spaCy models for Spanish language. GitHub. |
-| **en_core_web_sm** | 3.8.0 | Modelo de lenguaje inglés para spaCy | Honnibal, M., & Montani, I. (2018). spaCy models for English language. GitHub. |
 | **cymem** | 2.0.13 | Gestor de memoria para spaCy | Honnibal, M. (n.d.). cymem. GitHub. |
 | **murmurhash** | 1.0.15 | Función hash para spaCy | Honnibal, M. (n.d.). murmurhash. GitHub. |
 | **preshed** | 3.0.13 | Estructuras de datos hash para NLP | Honnibal, M. (n.d.). preshed. GitHub. |
@@ -175,97 +173,12 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 
 | Herramienta | Versión | Función | Declaración |
 |-------------|---------|---------|-------------|
-| **GitHub Copilot** | Versión más reciente | Asistencia en redacción de código Python | Asistencia técnica - No autoría intelectual |
-| **Windsurf (Codeium)** | Versión más reciente | Consultoría técnica y refactorización | Asistencia técnica - No autoría intelectual |
+| **GitHub Copilot** | 0.45.1 | Asistencia en redacción de código Python | Asistencia técnica - No autoría intelectual |
+| **Windsurf (Codeium)** | 1.48.2 | Consultoría técnica y refactorización | Asistencia técnica - No autoría intelectual |
 
 ### **Software de Análisis (Usuario)**
 
 | Software | Versión | Propósito |
 |----------|---------|----------|
-| **Excel / LibreOffice Calc** | 2016+ / 7.x+ | Preparación de datos de entrada y revisión de salidas |
-| **Python IDE** | (Tu preferencia) | Ejecución de scripts |
-
----
-
-## 📚 Referencias Completas (para tu Trabajo APA 7)
-
-### **Referencias Metodológicas - Análisis Temático**
-## 📚 Referencias Completas en Formato APA 7
-
-(Para copiar directamente a tu apartado de REFERENCIAS del TFG)
-
-Bird, S., Klein, E., & Loper, E. (2009). *Natural language processing with Python*. O'Reilly Media.
-
-Braun, V., & Clarke, V. (2006). Using thematic analysis in psychology. *Qualitative Research in Sport, Exercise and Health*, 3(2), 77–101. https://doi.org/10.1191/1478088706qp063oa
-
-Church, K. W., & Hanks, P. (1989). Word association norms, mutual information, and lexicography. In *Proceedings of the 27th annual meeting of the association for computational linguistics* (pp. 76–83). https://doi.org/10.3115/981623.981633
-
-Codeium. (2023). *Windsurf - AI code editor* [Computer software]. https://windsurf.dev/
-
-Dwyer, G. P. (2023). The ethics of artificial intelligence in academic research. *AI and Ethics*, 3(1), 1–12. https://doi.org/10.1007/s43681-023-00289-2
-
-Etc. (2010). *python-dateutil - Extensions to the standard python datetime module* [Software library]. https://pypi.org/project/python-dateutil/
-
-Gazoni, E. (2020). *openpyxl - A Python library to read/write Excel 2010 xlsx/xlsm files* [Software library]. GitHub. https://github.com/openpyxl/openpyxl
-
-Hagberg, A. A., Schult, D. A., & Swart, P. J. (2008). Exploring network structure, dynamics, and function using NetworkX. In *Proceedings of the 7th Python in Science Conference* (pp. 11–15). SciPy.
-
-Harris, C. R., Millman, K. J., van der Walt, S. J., et al. (2020). Array programming with NumPy. *Nature*, 585(7825), 357–362. https://doi.org/10.1038/s41586-020-2649-2
-
-Honnibal, M., & Montani, I. (2017). spaCy 2: Natural language understanding with Bloom embeddings, convolutional neural networks and incremental parsing. In *Proceedings of the International Conference on Language Resources and Evaluation (LREC 2018)*.
-
-Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. *Computing in Science & Engineering*, 9(3), 90–95. https://doi.org/10.1109/MCSE.2007.55
-
-IANA Time Zone Database. (2024). *tz database* [Database]. Internet Assigned Numbers Authority. https://www.iana.org/time-zones
-
-Irelide. (2013). *kiwisolver - Fast C++ solver for the Cassowary constraint programming algorithm* [Software library]. GitHub. https://github.com/nucleic/kiwisolver
-
-Johansson, F. (2010). *mpmath: A Python library for arbitrary-precision floating-point arithmetic* [Software library]. http://mpmath.org/
-
-Lhoest, Q., Villanova del Moral, A., Jernite, Y., et al. (2021). Datasets: A community library for natural language processing. In *Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing: Demonstrations* (pp. 175–184). Association for Computational Linguistics. https://doi.org/10.18653/v1/2021.emnlp-demo.21
-
-Liang, P. P., Bommasani, R., Loutfi, T., et al. (2022). *Holistic evaluation of language models* [Preprint]. arXiv. https://arxiv.org/abs/2211.09110
-
-Lundh, F., & Contributors. (2024). *Pillow (Python Imaging Library)* [Software library]. PyPI. https://pypi.org/project/Pillow/
-
-McGuire, P. (2024). *pyparsing - Python parsing module* [Software library]. GitHub. https://github.com/pyparsing/pyparsing
-
-McKinney, W. (2010). Data structures for statistical computing in python. In *Proceedings of the 9th Python in Science Conference* (Vol. 445, pp. 51–56). SciPy.
-
-Meurer, A., Smith, C. P., Paprocki, M., et al. (2017). SymPy: symbolic computing in Python. *PeerJ Computer Science*, 3, e103. https://doi.org/10.7717/peerj-cs.103
-
-Montani, I. (n.d.). *murmurhash - Inline hash functions* [Software library]. GitHub. https://github.com/explosion/murmurhash
-
-Mozilla. (2024). *certifi - Mozilla's CA bundle* [Software library]. PyPI. https://pypi.org/project/certifi/
-
-Newman, M. E. J. (2003). The structure and function of complex networks. *SIAM Review*, 45(2), 167–256. https://doi.org/10.1137/S003614450342480
-
-Open Storage Group. (2024). *fsspec - Filesystem spec for consistent interface* [Software library]. GitHub. https://github.com/fsspec/filesystem_spec
-
-OpenAI. (2023). *GitHub Copilot* [Computer software]. https://github.com/features/copilot
-
-Paszke, A., Gross, S., Massa, F., et al. (2019). PyTorch: An imperative style, high-performance deep learning library. In *Advances in neural information processing systems 32* (pp. 8024–8035). Curran Associates, Inc.
-
-Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). scikit-learn: Machine learning in Python. *Journal of Machine Learning Research*, 12, 2825–2830.
-
-Peng, R. D. (2011). Reproducible research in computational science. *Science*, 334(6060), 1226–1227. https://doi.org/10.1126/science.1213847
-
-Rehurek, R. (2024). *smart_open - utils for working with remote files* [Software library]. GitHub. https://github.com/RaRe-Technologies/smart_open
-
-Schroetter, B. (2010). *filelock - A Python file locking library* [Software library]. PyPI. https://pypi.org/project/filelock/
-
-Stubbs, M. (1995). Collocations and semantic profiles: On the cause of the trouble with language corpora. *Functions of Language*, 2(1), 23–55. https://doi.org/10.1093/ffl/2.1.23
-
-The Turing Way Community. (2022). *The Turing Way: A handbook for reproducible, ethical and collaborative research*. Zenodo. https://doi.org/10.5281/zenodo.7587432
-
-Tufte, E. R. (2001). *The visual display of quantitative information* (2nd ed.). Graphics Press.
-
-van der Giessen, M., & Contributors. (2024). *regex - Regular expression operations* [Software library]. PyPI. https://pypi.org/project/regex/
-
-Van Rossum, G., & Warsaw, B. (2001). PEP 8: Style guide for Python code. Python Enhancement Proposals. https://www.python.org/dev/peps/pep-0008/
-
-Virtanen, P., Gommers, R., Oliphant, T. E., et al. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. *Nature Methods*, 17(3), 261–272. https://doi.org/10.1038/s41592-019-0686-2
-
-Whitmore, D. (2024). *cloudpathlib - Cloud-native pathlib* [Software library]. GitHub. https://github.com/drivendataorg/cloudpathlib
-
-Wolf, M., Debut, L., Sanh, V., et al. (2020). Transformers: State-of-the-art natural language processing. In *Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations* (pp. 38–45). Association for Computational Linguistics. https://doi.org/10.18653/v1/2020.emnlp-demos.6
+| **Microsoft Excel** | 2019 (Hogar y Estudiantes) | Preparación de datos de entrada y revisión de salidas |
+| **Python IDE** | - | Ejecución de scripts |
