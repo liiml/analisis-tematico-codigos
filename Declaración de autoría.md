@@ -108,7 +108,7 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 | **torch** | 2.11.0 | Framework de deep learning (usado por transformers) | Paszke, A., et al. (2019). PyTorch: An imperative style, high-performance deep learning library. In *Advances in neural information processing systems* (pp. 8026-8037). |
 | **transformers** | 5.7.0 | Modelos preentrenados de NLP | Wolf, M., et al. (2020). Transformers: State-of-the-art natural language processing. In *Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations* (pp. 38-45). |
 | **huggingface_hub** | 1.13.0 | API para acceder a modelos de Hugging Face | Lhoest, Q., et al. (2021). Datasets: A community library for natural language processing. In *Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing: Demo* (pp. 175-184). |
-| **tokenizers** | 0.22.2 | Tokenizadores rápidos para transformers | Cousin, A., et al. (2022). 🤗 Tokenizers: Fast State-of-the-art Tokenization on Raw Text. |
+| **tokenizers** | 0.22.2 | Tokenizadores rápidos para transformers | Cousin, A., et al. (2022). Tokenizers: Fast State-of-the-art Tokenization on Raw Text. |
 | **safetensors** | 0.7.0 | Formato seguro para guardar tensores | Lhoest, Q., et al. (2023). safetensors: Safely store and load machine learning models. Hugging Face. |
 | **filelock** | 3.29.0 | Bloqueos de archivos para descarga segura | Schroetter, B. (2010). filelock - A Python file locking library. PyPI. |
 | **fsspec** | 2026.4.0 | Abstracción de sistemas de archivos | Open Storage Group (2024). fsspec - Filesystem Spec. GitHub. |
