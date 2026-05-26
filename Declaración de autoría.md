@@ -18,7 +18,7 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 - **Windsurf** (versión 1.48.2): Consultoría técnica, sugerencias de refactorización y asistencia en iteraciones posteriores
 
 **Supervisión y Validación:**
-- Todo el código fue revisado, testeado y validado por el autor antes de uso
+- Todo el código fue revisado, testeado y validado por la autora antes de uso
 
 ### 🚨 Aspectos Cubiertos para Evitar Plagio
 
@@ -27,7 +27,7 @@ Sistema automatizado para análisis de etiquetas codificadas usando procesamient
 - Normalización de grosores de aristas proporcional a % Casos Juntos vs Separados
 - Uso de layouts circulares/spring ordenados por conectividad
 
-✅ **Decisiones de diseño**: Todas son de la autora, implementadas con asistencia de IA
+✅ **Decisiones de diseño**: Todas son de la autora, implementadas (no generadas) con asistencia de IAs
 
 ✅ **Iteraciones metodológicas**: El refinamiento de algoritmos (ej: cambio de criterios de coocurrencia) surgió de decisiones propias de la autora
 
